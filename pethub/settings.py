@@ -31,8 +31,6 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'account',
-    'admin_auto_filters',
-
 ]
 
 
