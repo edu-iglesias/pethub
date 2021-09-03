@@ -6,7 +6,7 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
 
 from pet_finder.serializers import PetFinderSerializer, ErrorDetailSerializer
-from utils.address import get_full_address
+from utils.address import get_full_address, get_lat_long
 from utils.petfinder import pet_finder_generate_token
 
 
@@ -47,20 +47,6 @@ class PetFinderView(ViewSet):
         results_per_page : int, default 20
         return_df : boolean, default False
         """
-        params = {
-            'key': 'AIzaSyAdVP57aco-KOtMSFJHW4cBPgBvK3KG89I',
-            'address': " 3355 Berkmar, Dr. Charlottesville, VA, US "
-        }
-        base_url = 'https://maps.googleapis.com/maps/api/geocode/json?'
-        response = requests.get(base_url, params=params).json()
-        response.keys()
-        animal_latitude = ''
-        animal_longitude = ''
-        if response['status'] == 'OK':
-            geometry = response['results'][0]['geometry']
-            animal_latitude = geometry['location']['lat']
-            animal_longitude = geometry['location']['lng']
-
         data = request.data
 
         pf = pet_finder_generate_token()
@@ -108,9 +94,11 @@ class PetFinderView(ViewSet):
             state = address_dict.get('state')
             country =  address_dict.get('country')
 
-            full_address = get_full_address(address1, address2, city, state, country) # USE THIS ADDRESS TO GET LAT, LONG
-            animal_dict["latitude"] = animal_latitude  # INSERT LATITUDE HERE
-            animal_dict["longitude"] = animal_longitude  # INSERT LONGITUDE HERE
+            full_address = get_full_address(address1, address2, city, state, country)
+            lat_long_dict = get_lat_long(full_address)
+
+            animal_dict["latitude"] = lat_long_dict.get('latitude')
+            animal_dict["longitude"] = lat_long_dict.get('longitude')
 
             output_response.append(animal_dict)
 
