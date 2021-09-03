@@ -1,10 +1,11 @@
+import requests
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
 
-from pet_finder.serializers import PetFinderSerializer
+from pet_finder.serializers import PetFinderSerializer, ErrorDetailSerializer
 from utils.address import get_full_address
 from utils.petfinder import pet_finder_generate_token
 
@@ -46,6 +47,19 @@ class PetFinderView(ViewSet):
         results_per_page : int, default 20
         return_df : boolean, default False
         """
+        params = {
+            'key': 'AIzaSyAdVP57aco-KOtMSFJHW4cBPgBvK3KG89I',
+            'address': " 3355 Berkmar, Dr. Charlottesville, VA, US "
+        }
+        base_url = 'https://maps.googleapis.com/maps/api/geocode/json?'
+        response = requests.get(base_url, params=params).json()
+        response.keys()
+        user_latitude = ''
+        user_longitude = ''
+        if response['status'] == 'OK':
+            geometry = response['results'][0]['geometry']
+            user_latitude = geometry['location']['lat']
+            user_longitude = geometry['location']['lng']
 
         data = request.data
 
@@ -95,8 +109,8 @@ class PetFinderView(ViewSet):
             country =  address_dict.get('country')
 
             full_address = get_full_address(address1, address2, city, state, country) # USE THIS ADDRESS TO GET LAT, LONG
-            animal_dict["latitude"] = None # INSERT LATITUDE HERE
-            animal_dict["longitude"] = None # INSERT LONGITUDE HERE
+            animal_dict["latitude"] = user_latitude  # INSERT LATITUDE HERE
+            animal_dict["longitude"] = user_longitude  # INSERT LONGITUDE HERE
 
             output_response.append(animal_dict)
 

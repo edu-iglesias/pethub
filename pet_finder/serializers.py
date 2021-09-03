@@ -56,3 +56,6 @@ class PetFinderSerializer(serializers.Serializer):
             'return_df'
             'special_needs'
         ]
+
+class ErrorDetailSerializer(serializers.Serializer):
+    error = serializers.CharField(max_length=255)
