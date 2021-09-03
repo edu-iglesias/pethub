@@ -5,6 +5,7 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
 
 from pet_finder.serializers import PetFinderSerializer
+from utils.address import get_full_address
 from utils.petfinder import pet_finder_generate_token
 
 
@@ -78,6 +79,27 @@ class PetFinderView(ViewSet):
             return_df=data.get('return_df', False)
         )
 
-        return Response(animals, status=HTTP_200_OK)
+        animals_list = animals.get('animals')
+
+        output_response = []
+        for animal in animals_list:
+
+            animal_dict = animal
+            contact_dict = animal.get('contact')
+            address_dict = contact_dict.get('address')
+
+            address1 = address_dict.get('address1')
+            address2 = address_dict.get('address2')
+            city = address_dict.get('city')
+            state = address_dict.get('state')
+            country =  address_dict.get('country')
+
+            full_address = get_full_address(address1, address2, city, state, country) # USE THIS ADDRESS TO GET LAT, LONG
+            animal_dict["latitude"] = None # INSERT LATITUDE HERE
+            animal_dict["longitude"] = None # INSERT LONGITUDE HERE
+
+            output_response.append(animal_dict)
+
+        return Response(output_response, status=HTTP_200_OK)
 
 
