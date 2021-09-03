@@ -3,7 +3,7 @@ import os
 import django
 import time
 
-sys.path.append("../pethub")
+sys.path.append("")
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pethub.settings')
 django.setup()
 
