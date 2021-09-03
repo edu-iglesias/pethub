@@ -105,3 +105,25 @@ class PetFinderView(ViewSet):
         return Response(output_response, status=HTTP_200_OK)
 
 
+    @swagger_auto_schema(
+        method='POST',
+    )
+    @action(methods=["POST"], detail=True, permission_classes=[], authentication_classes=[])
+    def details(self, request, pk):
+        """
+        Parameters
+        ----------
+        animal_id : int, tuple or list of int, optional
+        """
+        data = request.data
+        pf = pet_finder_generate_token()
+
+        animal = pf.animals(
+            animal_id=pk,
+            results_per_page=1
+        )
+
+        output = {}
+        if animal:
+            output = animal.get('animals')
+        return Response(output, status=HTTP_200_OK)
