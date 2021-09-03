@@ -54,12 +54,12 @@ class PetFinderView(ViewSet):
         base_url = 'https://maps.googleapis.com/maps/api/geocode/json?'
         response = requests.get(base_url, params=params).json()
         response.keys()
-        user_latitude = ''
-        user_longitude = ''
+        animal_latitude = ''
+        animal_longitude = ''
         if response['status'] == 'OK':
             geometry = response['results'][0]['geometry']
-            user_latitude = geometry['location']['lat']
-            user_longitude = geometry['location']['lng']
+            animal_latitude = geometry['location']['lat']
+            animal_longitude = geometry['location']['lng']
 
         data = request.data
 
@@ -109,8 +109,8 @@ class PetFinderView(ViewSet):
             country =  address_dict.get('country')
 
             full_address = get_full_address(address1, address2, city, state, country) # USE THIS ADDRESS TO GET LAT, LONG
-            animal_dict["latitude"] = user_latitude  # INSERT LATITUDE HERE
-            animal_dict["longitude"] = user_longitude  # INSERT LONGITUDE HERE
+            animal_dict["latitude"] = animal_latitude  # INSERT LATITUDE HERE
+            animal_dict["longitude"] = animal_longitude  # INSERT LONGITUDE HERE
 
             output_response.append(animal_dict)
 
